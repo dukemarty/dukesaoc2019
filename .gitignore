@@ -24,5 +24,6 @@
 hs_err_pid*
 Kotlin/.idea/$CACHE_FILE$
 Kotlin/.idea/workspace.xml
+Kotlin/bin/
 
 Nim/*.js
