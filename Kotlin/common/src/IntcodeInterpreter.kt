@@ -1,8 +1,11 @@
-class IntcodeInterpreter(val program: IntcodeProgram) {
 
-    val OPCODE_END = 99
-    val OPCODE_ADD = 1
-    val OPCODE_MUL = 2
+package dukemarty.aoc2019.common
+
+class IntcodeInterpreter(private val program: IntcodeProgram) {
+
+    private val OPCODE_END = 99
+    private val OPCODE_ADD = 1
+    private val OPCODE_MUL = 2
 
     private var pc: Int = 0
 
@@ -15,8 +18,6 @@ class IntcodeInterpreter(val program: IntcodeProgram) {
 
         var op = program.get(pc)
         while (op != OPCODE_END) {
-//            println("$program")
-//            println("pc=$pc -> opcode=$op")
 
             when (op) {
                 OPCODE_ADD -> performAdd()
@@ -26,8 +27,6 @@ class IntcodeInterpreter(val program: IntcodeProgram) {
             pc += 4
             op = program.get(pc)
         }
-
-//        println("$program")
     }
 
     private fun performAdd() {

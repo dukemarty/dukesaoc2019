@@ -1,5 +1,8 @@
 
+package dukemarty.aoc2019.days
+
 import java.io.*
+import dukemarty.aoc2019.common.*
 
 
 fun main(args: Array<String>) {
@@ -11,7 +14,7 @@ fun main(args: Array<String>) {
 
     partOne(line)
 
-//    partTwo(puzzleInput1FromFile)
+    partTwo(line)
 }
 
 fun partOne(line: String) {
@@ -31,4 +34,24 @@ fun partOne(line: String) {
     println("Final program state at pos[0]: ${program.get(0)}")
 }
 
+fun partTwo(line: String) {
+    println("\n--- Part Two ---")
+
+    for (noun in 0..99) {
+        for (verb in 0..99) {
+            val program = IntcodeProgram(line)
+
+            program.set(1, noun)
+            program.set(2, verb)
+
+            val interpreter = IntcodeInterpreter(program)
+            interpreter.runDay1Style()
+
+            if (program.get(0) == 19690720){
+                println("Found result noun/verb = $noun / $verb => result: ${100 * noun + verb}")
+            }
+        }
+    }
+
+}
 

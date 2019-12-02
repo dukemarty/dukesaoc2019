@@ -1,3 +1,4 @@
+
 package dukemarty.aoc2019.common
 
 class IntcodeProgram {
@@ -9,10 +10,32 @@ class IntcodeProgram {
     }
 
     fun get(index: Int): Int {
+        if (index > opcodes.size) {
+            var newOpcodes = IntArray(2 * index)
+            opcodes.copyInto(newOpcodes)
+            opcodes = newOpcodes
+        }
+
         return opcodes[index]
     }
 
+    fun gget(index: Int): Int {
+        val pos = get(index)
+
+        return get(pos)
+    }
+
     fun set(index: Int, value: Int) {
-        opcodes[index]= value
+        if (index > opcodes.size) {
+            var newOpcodes = IntArray(2 * index)
+            opcodes.copyInto(newOpcodes)
+            opcodes = newOpcodes
+        }
+
+        opcodes[index] = value
+    }
+
+    override fun toString(): String {
+        return "Program: ${opcodes.joinToString()}"
     }
 }

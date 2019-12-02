@@ -1,4 +1,6 @@
 
+package dukemarty.aoc2019.days
+
 import java.io.*
 
 
