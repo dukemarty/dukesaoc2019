@@ -1,27 +1,24 @@
 package dukemarty.aoc2019.days.day3
 
+import kotlin.math.abs
+
 
 class CircuitBoard(halfWidth: Int, halfHeight: Int) {
 
-    var x0: Int = halfWidth
-    var y0: Int = halfHeight
+    private var x0: Int = halfWidth
+    private var y0: Int = halfHeight
 
-    var board: Array<CharArray>
-    var measureBoard: Array<IntArray>
+    private var board: Array<CharArray> = Array(2 * halfHeight + 1) { CharArray(2 * halfWidth + 1) { '.' } }
+    private var measureBoard: Array<IntArray> = Array(2 * halfHeight + 1) { IntArray(2 * halfWidth + 1) { 0 } }
 
     var crossings = mutableListOf<Coord>()
-
-    init {
-        board = Array(2 * halfHeight + 1) { CharArray(2 * halfWidth + 1, { '.' }) }
-        measureBoard = Array(2 * halfHeight + 1) { IntArray(2 * halfWidth + 1, { 0 }) }
-    }
 
     fun getCrossingsStepDistances(): Collection<Int> {
         return crossings.map { c -> measureBoard[c.y][c.x] }
     }
 
     fun getCrossingDistances(): Collection<Int> {
-        return crossings.map { c -> Math.abs(c.x - x0) + Math.abs(c.y - y0) }
+        return crossings.map { c -> abs(c.x - x0) + abs(c.y - y0) }
     }
 
     fun drawAndMeasureWire(id: Char, wire: WireLine) {
@@ -43,10 +40,10 @@ class CircuitBoard(halfWidth: Int, halfHeight: Int) {
 
         for (bend in wire.Line) {
             when (bend.Direction) {
-                'R' -> drawBend(id, currPos, bend.Width, { pos -> pos.x++ })
-                'D' -> drawBend(id, currPos, bend.Width, { pos -> pos.y++ })
-                'L' -> drawBend(id, currPos, bend.Width, { pos -> pos.x-- })
-                'U' -> drawBend(id, currPos, bend.Width, { pos -> pos.y-- })
+                'R' -> drawBend(id, currPos, bend.Width) { pos -> pos.x++ }
+                'D' -> drawBend(id, currPos, bend.Width) { pos -> pos.y++ }
+                'L' -> drawBend(id, currPos, bend.Width) { pos -> pos.x-- }
+                'U' -> drawBend(id, currPos, bend.Width) { pos -> pos.y-- }
             }
         }
     }

@@ -1,10 +1,9 @@
-
 package dukemarty.aoc2019.days.day3
 
 
 class Layout(layoutDescription: Sequence<String>) {
 
-    var lines: ArrayList<WireLine> = ArrayList<WireLine>()
+    var lines: ArrayList<WireLine> = ArrayList()
 
     init {
         parseLines(layoutDescription)
@@ -12,11 +11,11 @@ class Layout(layoutDescription: Sequence<String>) {
 
     private fun parseLines(layout: Sequence<String>) {
         for (wire in layout) {
-            lines.add(WireLine(wire.split(",").map { it -> Wire(it[0], it.substring(1).toInt()) }))
+            lines.add(WireLine(wire.split(",").map { Wire(it[0], it.substring(1).toInt()) }))
         }
     }
 
-    public override fun toString(): String {
+    override fun toString(): String {
         val sb = StringBuilder()
 
         for (i in IntRange(0, lines.size - 1)) {

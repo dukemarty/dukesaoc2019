@@ -1,15 +1,15 @@
-
 package dukemarty.aoc2019.days
 
-import java.io.*
+import java.io.BufferedReader
+import java.io.FileReader
 
 
-fun main(args: Array<String>) {
+fun main() {
 
     println("--- Day 1: The Tyranny of the Rocket Equation ---")
 
-    var br = BufferedReader(FileReader("puzzle_input/day1-input1.txt"))
-    val puzzleInput1FromFile = br.lineSequence().map { it -> it.toInt() }.toList()
+    val br = BufferedReader(FileReader("puzzle_input/day1-input1.txt"))
+    val puzzleInput1FromFile = br.lineSequence().map { it.toInt() }.toList()
 
     partOne(puzzleInput1FromFile)
 
@@ -20,7 +20,7 @@ fun partOne(rocketModules: List<Int>) {
     println("\n--- Part One ---")
 
     var res = 0
-    for (rm in rocketModules){
+    for (rm in rocketModules) {
         res += (rm / 3) - 2
     }
 
@@ -31,7 +31,7 @@ fun partTwo(rocketModules: List<Int>) {
     println("\n--- Part Two ---")
 
     var res = 0
-    for (rm in rocketModules){
+    for (rm in rocketModules) {
         res += calcAllFuelForModule(rm)
     }
 
@@ -45,7 +45,7 @@ fun calcAllFuelForModule(moduleWeight: Int): Int {
     var fuelBase = base
     while (fuelBase > 0) {
         var addFuel = (fuelBase / 3) - 2
-        if (addFuel < 0){
+        if (addFuel < 0) {
             addFuel = 0
         }
 

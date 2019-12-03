@@ -1,17 +1,17 @@
 
 package dukemarty.aoc2019.common
 
-class IntcodeProgram {
+class IntcodeProgram(prog: String) {
 
-    var opcodes: IntArray
+    private var opcodes: IntArray
 
-    constructor(prog: String) {
-        opcodes = prog.split(",").map { it -> it.toInt() }.toIntArray()
+    init {
+        opcodes = prog.split(",").map { it.toInt() }.toIntArray()
     }
 
     fun get(index: Int): Int {
         if (index > opcodes.size) {
-            var newOpcodes = IntArray(2 * index)
+            val newOpcodes = IntArray(2 * index)
             opcodes.copyInto(newOpcodes)
             opcodes = newOpcodes
         }
@@ -27,7 +27,7 @@ class IntcodeProgram {
 
     fun set(index: Int, value: Int) {
         if (index > opcodes.size) {
-            var newOpcodes = IntArray(2 * index)
+            val newOpcodes = IntArray(2 * index)
             opcodes.copyInto(newOpcodes)
             opcodes = newOpcodes
         }

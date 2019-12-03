@@ -5,7 +5,7 @@ import java.io.*
 import dukemarty.aoc2019.common.*
 
 
-fun main(args: Array<String>) {
+fun main() {
 
     println("--- Day 2: 1202 Program Alarm ---")
 
