@@ -10,7 +10,8 @@ echo "--- Day 2: 1202 Program Alarm ---"
 
 # var puzzle_input = readFile("day1-puzzleinput1.txt")
 
-let program = puzzle_input.split(",").map(parseInt)
+var program = puzzle_input.split(",").map(parseInt)
+echo "Parsed input:\n", program
 
 echo "\n--- Part One ---"
 
@@ -21,8 +22,13 @@ var ip = 0
 
 while (program[ip] != 99):
     case program[ip]:
-        1 -> program[ip+3] = program[program[ip+1]] + program[program[ip+2]]
-        2 -> program[ip+3] = program[program[ip+1]] * program[program[ip+2]]
+        of 1:
+             program[program[ip+3]] = program[program[ip+1]] + program[program[ip+2]]
+        of 2:
+            program[program[ip+3]] = program[program[ip+1]] * program[program[ip+2]]
+        else:
+            echo "don't care"
+    ip += 4
     
 
 echo "Result in program[0]: ", program[0]
@@ -31,12 +37,27 @@ echo "Result in program[0]: ", program[0]
 
 echo "\n--- Part Two ---"
 
-# var res2 = 0
-# for m in rocket_modules:
-#     res2 += calc_fuel(m)
+block findNounAndVerb:
 
-# echo "Required fuel (complex calculation): ", res2
+    for noun in 0..99:
+        for verb in 0..99:
+            program = puzzle_input.split(",").map(parseInt)
+            program[1] = noun
+            program[2] = verb
+            ip = 0
+            while (program[ip] != 99):
+                case program[ip]:
+                    of 1:
+                         program[program[ip+3]] = program[program[ip+1]] + program[program[ip+2]]
+                    of 2:
+                        program[program[ip+3]] = program[program[ip+1]] * program[program[ip+2]]
+                    else:
+                        echo "don't care"
+                ip += 4
+            if program[0] == 19690720:
+                echo "Found noun and verb: ", noun, " & ", verb
+                echo "Result: ", 100*noun * verb
+                break findNounAndVerb
 
-
-     
+echo "\nDay 2: Finished! :-)"
 
