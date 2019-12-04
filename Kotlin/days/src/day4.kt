@@ -1,4 +1,3 @@
-
 const val puzzleInputDay4 = "273025-767253"
 
 data class PasswordRange(val range: String) {
@@ -18,29 +17,16 @@ fun main(args: Array<String>) {
 
     val range = PasswordRange(puzzleInputDay4)
 
-    partOne(range)
-
-    partTwo(range)
+    genericPart("One", ::checkPasswordValidityPart1, range)
+    genericPart("Two", ::checkPasswordValidityPart2, range)
 }
 
-fun partOne(passwordRange: PasswordRange) {
-    println("\n--- Part One ---");
+fun genericPart(part: String, checker: (String) -> Boolean, passwordRange: PasswordRange) {
+    println("\n--- Part $part ---");
 
     var count = 0
     for (i in IntRange(passwordRange.lowerBound, passwordRange.upperBound)) {
-        if (checkPasswordValidityPart1(i.toString())) {
-            ++count
-        }
-    }
-    println("Found number of valid passwords: $count")
-}
-
-fun partTwo(passwordRange: PasswordRange) {
-    println("\n--- Part Two ---");
-
-    var count = 0
-    for (i in IntRange(passwordRange.lowerBound, passwordRange.upperBound)) {
-        if (checkPasswordValidityPart2(i.toString())) {
+        if (checker(i.toString())) {
             ++count
         }
     }
@@ -73,7 +59,7 @@ private fun checkPasswordValidityPart2(candidate: String): Boolean {
         if (candidate[i] == candidate[i - 1]) {
             ++matchCount
         } else {
-            if (matchCount == 2){
+            if (matchCount == 2) {
                 doubleFound = true
             }
 
@@ -81,7 +67,7 @@ private fun checkPasswordValidityPart2(candidate: String): Boolean {
         }
     }
 
-    if (matchCount == 2){
+    if (matchCount == 2) {
         doubleFound = true
     }
 
