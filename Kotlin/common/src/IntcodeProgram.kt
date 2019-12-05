@@ -1,4 +1,3 @@
-
 package dukemarty.aoc2019.common
 
 class IntcodeProgram(prog: String) {
@@ -17,6 +16,14 @@ class IntcodeProgram(prog: String) {
         }
 
         return opcodes[index]
+    }
+
+    fun read(index: Int, mode: Int): Int {
+        return when (mode) {
+            MODE_POSITION -> gget(index)
+            MODE_IMMEDIATE -> get(index)
+            else -> 0
+        }
     }
 
     fun gget(index: Int): Int {
