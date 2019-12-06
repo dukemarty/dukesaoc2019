@@ -1,6 +1,8 @@
 package dukemarty.aoc2019.common
 
-data class IntcodeInstruction(val opcode: Int, val parameterCount: Int, val executor: (LiveInstruction, IntcodeProgram) -> Boolean)
+data class InstructionResult(val stopRun: Boolean, val updatePc: Boolean)
+
+data class IntcodeInstruction(val opcode: Int, val parameterCount: Int, val executor: (LiveInstruction, IntcodeProgram) -> InstructionResult)
 
 public const val MODE_POSITION = 0
 public const val MODE_IMMEDIATE = 1

@@ -29,7 +29,7 @@ fun partOne(line: String) {
 
     val interpreter = IntcodeInterpreter(program)
 
-    interpreter.runDay1Style()
+    interpreter.runProgram()
 
     println("Final program state at pos[0]: ${program.get(0)}")
 }
@@ -45,7 +45,7 @@ fun partTwo(line: String) {
             program.set(2, verb)
 
             val interpreter = IntcodeInterpreter(program)
-            interpreter.runDay1Style()
+            interpreter.runProgram()
 
             if (program.get(0) == 19690720){
                 println("Found result noun/verb = $noun / $verb => result: ${100 * noun + verb}")
