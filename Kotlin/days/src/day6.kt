@@ -44,7 +44,7 @@ class SpaceObject(val name: String) {
 
         if (orbits != null && !followedLinks.contains(orbits!!) && !orbits!!.alreadyFollowed) {
             followedLinks.add(orbits!!)
-            return orbits!!.name
+            return orbits?.name
         }
 
         return null
@@ -58,7 +58,7 @@ class SpaceObject(val name: String) {
         }
 
         if (orbiters != null && orbiters.size > 0) {
-            sb.append(", >[${ orbiters.joinToString { it.name }} ]")
+            sb.append(", >[${orbiters.joinToString { it.name }} ]")
         }
 
         sb.append(") -> #$fullOrbitCount with #$fullOrbitersCount")
@@ -156,10 +156,6 @@ fun main(args: Array<String>) {
 
     val orbitGraph = loadInput("puzzle_input/day6-input1.txt")
 
-//    for (so in orbitGraph.graph.keys) {
-//        println("${orbitGraph.graph[so]} <- ${orbitGraph.graph[so]!!.orbiters.toString()}")
-//    }
-
     println("Root(s): ${orbitGraph.roots}")
     println("Leaves: ${orbitGraph.leaves}")
 
@@ -178,6 +174,10 @@ fun loadInput(filename: String): OrbitGraph {
 
         orbitGraph.addConnection(parts[0], parts[1])
     }
+
+//    for (so in orbitGraph.graph.keys) {
+//        println("${orbitGraph.graph[so]} <- ${orbitGraph.graph[so]!!.orbiters.toString()}")
+//    }
 
     return orbitGraph
 }
