@@ -6,6 +6,14 @@ data class ProgramOutput(val pc: Int, val value: Int)
 
 class IntcodeInterpreter(private val program: IntcodeProgram) {
 
+    val MISSING_INPUT_IGNORE = 0
+    val MISSING_INPUT_HALT = 1
+
+    val STATE_INIT = 0
+    val STATE_RUNNING = 1
+    val STATE_HALTED = 2
+    val STATE_STOPPED = 3
+
     private val OPCODE_END = 99
     private val OPCODE_ADD = 1
     private val OPCODE_MUL = 2
@@ -25,7 +33,7 @@ class IntcodeInterpreter(private val program: IntcodeProgram) {
             OPCODE_JZR to IntcodeInstruction(OPCODE_JZR, 2, { instr, prog -> performJumpIfFalse(instr, prog) }),
             OPCODE_LTH to IntcodeInstruction(OPCODE_LTH, 3, { instr, prog -> performLessThan(instr, prog) }),
             OPCODE_EQL to IntcodeInstruction(OPCODE_EQL, 3, { instr, prog -> performEquals(instr, prog) }),
-            OPCODE_END to IntcodeInstruction(OPCODE_END, 0, { instr, prog -> InstructionResult(true, false) })
+            OPCODE_END to IntcodeInstruction(OPCODE_END, 0, { instr, prog -> performEnd(instr, prog) })
     )
 
 
@@ -33,16 +41,32 @@ class IntcodeInterpreter(private val program: IntcodeProgram) {
 
     private var ip: Int = 0
 
-    var inputBuffer: IntArray = IntArray(0);
-    val outputBuffer: ArrayList<ProgramOutput> = ArrayList<ProgramOutput>()
+    var inputBuffer = ArrayList<Int>();
+    val outputBuffer = ArrayList<ProgramOutput>()
+    var outputForward = ArrayList<IntcodeInterpreter>()
+
+    var state = STATE_INIT
+
+    var missingInputHandling = MISSING_INPUT_IGNORE
 
     fun step(stepWidth: Int) {
         pc += stepWidth
     }
 
+    fun addOutputInterpreter(target: IntcodeInterpreter) {
+        outputForward.add(target)
+    }
+
+    fun appendInput(newInput: Int) {
+        inputBuffer.add(newInput)
+    }
+
     fun runProgram() {
 
 //        var op = program.get(pc)
+
+        state = STATE_RUNNING
+
         var stopRun = false
         var execCount = 0
         while (!stopRun) {
@@ -98,15 +122,22 @@ class IntcodeInterpreter(private val program: IntcodeProgram) {
             val dest = program.read(pc + 1, MODE_IMMEDIATE)
             program.set(dest, inputBuffer[ip])
             ++ip
-        }
 
-        return InstructionResult(false, true)
+            return InstructionResult(false, true)
+        } else {
+            state = STATE_HALTED
+            return InstructionResult(true, false)
+        }
     }
 
     private fun performOutput(instruction: LiveInstruction, program: IntcodeProgram): InstructionResult {
         val src = program.read(pc + 1, instruction.paramModes[0])
 //        val src = program.get(pc + 1)
         outputBuffer.add(ProgramOutput(pc, src))
+
+        for (outTarget in outputForward) {
+            outTarget.appendInput(src)
+        }
 
         return InstructionResult(false, true)
     }
@@ -163,4 +194,9 @@ class IntcodeInterpreter(private val program: IntcodeProgram) {
         return InstructionResult(false, true)
     }
 
+    private fun performEnd(instruction: LiveInstruction, program: IntcodeProgram): InstructionResult {
+        state = STATE_STOPPED
+
+        return InstructionResult(true, false)
+    }
 }

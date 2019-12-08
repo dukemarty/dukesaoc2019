@@ -11,7 +11,7 @@ fun main(args: Array<String>) {
 
     day7partOne(line)
 
-//    day7partTwo(line)
+    day7partTwo(line)
 }
 
 fun day7partOne(line: String) {
@@ -19,58 +19,27 @@ fun day7partOne(line: String) {
 
     var maxRes = Int.MIN_VALUE
     var combination = IntArray(5)
-    var used = HashSet<Int>()
-    for (i1 in IntRange(0, 4)) {
-        used.clear()
-        used.add(i1)
-        for (i2 in IntRange(0, 4)) {
-            if (used.contains(i2)) continue
-            used.add(i2)
-            for (i3 in IntRange(0, 4)) {
-                if (used.contains(i3)) continue
-                used.add(i3)
-                for (i4 in IntRange(0, 4)) {
-                    if (used.contains(i4)) continue
-                    used.add(i4)
-                    for (i5 in IntRange(0, 4)) {
-                        if (used.contains(i5)) continue
 
-                        val progs = arrayOf(IntcodeProgram(line), IntcodeProgram(line), IntcodeProgram(line), IntcodeProgram(line), IntcodeProgram(line))
-                        val amps = arrayOf(IntcodeInterpreter(progs[0]), IntcodeInterpreter(progs[1]), IntcodeInterpreter(progs[2]), IntcodeInterpreter(progs[3]), IntcodeInterpreter(progs[4]))
+    for (perm in permute(listOf(0, 1, 2, 3, 4))) {
+        val progs = arrayOf(IntcodeProgram(line), IntcodeProgram(line), IntcodeProgram(line), IntcodeProgram(line), IntcodeProgram(line))
+        val amps = arrayOf(IntcodeInterpreter(progs[0]), IntcodeInterpreter(progs[1]), IntcodeInterpreter(progs[2]), IntcodeInterpreter(progs[3]), IntcodeInterpreter(progs[4]))
 
-                        amps[0].inputBuffer = intArrayOf(i1, 0)
-                        amps[0].runProgram()
-                        println("   Output Amp1 for input $i1: ${amps[0].outputBuffer.joinToString { "$it" }}")
+        amps[0].inputBuffer = arrayListOf(perm[0], 0)
+        for (i in IntRange(0, 3)) {
+            amps[i].addOutputInterpreter(amps[i + 1])
 
-                        amps[1].inputBuffer = intArrayOf(i2, amps[0].outputBuffer[0].value)
-                        amps[1].runProgram()
-                        println("   Output Amp2 for input $i2: ${amps[1].outputBuffer[0].value}")
-
-                        amps[2].inputBuffer = intArrayOf(i3, amps[1].outputBuffer[0].value)
-                        amps[2].runProgram()
-                        println("   Output Amp3 for input $i3: ${amps[2].outputBuffer[0].value}")
-
-                        amps[3].inputBuffer = intArrayOf(i4, amps[2].outputBuffer[0].value)
-                        amps[3].runProgram()
-                        println("   Output Amp4 for input $i4: ${amps[3].outputBuffer[0].value}")
-
-                        amps[4].inputBuffer = intArrayOf(i5, amps[3].outputBuffer[0].value)
-                        amps[4].runProgram()
-                        println("   Output Amp5 for input $i5: ${amps[4].outputBuffer[0].value}")
-
-                        val result = amps[4].outputBuffer[0].value
-                        if (result > maxRes){
-                            maxRes = result
-                            combination = intArrayOf(i1, i2, i3, i4, i5)
-                        }
-                    }
-                    used.remove(i4)
-                }
-                used.remove(i3)
-            }
-            used.remove(i2)
+            amps[i + 1].inputBuffer = arrayListOf(perm[i + 1])
         }
-        used.remove(i1)
+
+        for (i in IntRange(0, 4)) {
+            amps[i].runProgram()
+        }
+
+        val result = amps[4].outputBuffer[0].value
+        if (result > maxRes) {
+            maxRes = result
+            combination = perm.toIntArray()
+        }
     }
 
     println("Optimal amplifier output: $maxRes for combination [${combination.joinToString { "$it" }}]")
@@ -79,12 +48,46 @@ fun day7partOne(line: String) {
 fun day7partTwo(line: String) {
     println("\n--- Part Two ---")
 
-    val program = IntcodeProgram(line)
+    var maxRes = Int.MIN_VALUE
+    var combination = IntArray(5)
 
-    val interpreter = IntcodeInterpreter(program)
-    interpreter.inputBuffer = intArrayOf(5)
+    for (perm in permute(listOf(5, 6, 7, 8, 9))) {
+        val progs = arrayOf(IntcodeProgram(line), IntcodeProgram(line), IntcodeProgram(line), IntcodeProgram(line), IntcodeProgram(line))
+        val amps = arrayOf(IntcodeInterpreter(progs[0]), IntcodeInterpreter(progs[1]), IntcodeInterpreter(progs[2]), IntcodeInterpreter(progs[3]), IntcodeInterpreter(progs[4]))
 
-    interpreter.runProgram()
+        amps[0].inputBuffer = arrayListOf(perm[0], 0)
+        for (i in IntRange(0, 3)) {
+            amps[i].addOutputInterpreter(amps[i + 1])
 
-    println("Output of program: ${interpreter.outputBuffer}")
+            amps[i + 1].inputBuffer = arrayListOf(perm[i + 1])
+        }
+        amps[4].addOutputInterpreter(amps[0])
+
+        while (amps[4].state != amps[4].STATE_STOPPED) {
+            for (i in IntRange(0, 4)) {
+                amps[i].runProgram()
+            }
+        }
+
+        val result = amps[4].outputBuffer[amps[4].outputBuffer.size - 1].value
+        if (result > maxRes) {
+            maxRes = result
+            combination = perm.toIntArray()
+        }
+    }
+
+    println("Optimal amplifier output: $maxRes for combination [${combination.joinToString { "$it" }}]")
+}
+
+private fun permute(list: List<Int>): List<List<Int>> {
+    if (list.size == 1) return listOf(list)
+    val perms = mutableListOf<List<Int>>()
+    val sub = list[0]
+    for (perm in permute(list.drop(1)))
+        for (i in 0..perm.size) {
+            val newPerm = perm.toMutableList()
+            newPerm.add(i, sub)
+            perms.add(newPerm)
+        }
+    return perms
 }

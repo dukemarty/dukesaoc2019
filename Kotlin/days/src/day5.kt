@@ -20,7 +20,7 @@ fun partOne(line: String) {
     val program = IntcodeProgram(line)
 
     val interpreter = IntcodeInterpreter(program)
-    interpreter.inputBuffer = intArrayOf(1)
+    interpreter.inputBuffer = arrayListOf(1)
 
     interpreter.runProgram()
 
@@ -33,7 +33,7 @@ fun partTwo(line: String) {
     val program = IntcodeProgram(line)
 
     val interpreter = IntcodeInterpreter(program)
-    interpreter.inputBuffer = intArrayOf(5)
+    interpreter.inputBuffer = arrayListOf(5)
 
     interpreter.runProgram()
 
