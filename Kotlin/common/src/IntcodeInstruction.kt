@@ -6,15 +6,16 @@ data class IntcodeInstruction(val opcode: Int, val parameterCount: Int, val exec
 
 public const val MODE_POSITION = 0
 public const val MODE_IMMEDIATE = 1
+public const val MODE_RELATIVE = 2
 
-class ParameterModeList(instruction: Int) {
+class ParameterModeList(instruction: Long) {
 
     val modes = ArrayList<Int>()
 
     init {
         var value = instruction / 100
         while (value > 0) {
-            modes.add(value % 10)
+            modes.add((value % 10).toInt())
             value /= 10
         }
     }
@@ -28,8 +29,8 @@ class ParameterModeList(instruction: Int) {
     }
 }
 
-data class LiveInstruction(val instruction: Int) {
+data class LiveInstruction(val instruction: Long) {
 
-    val opcode: Int = instruction % 100
+    val opcode: Int = (instruction % 100).toInt()
     var paramModes = ParameterModeList(instruction)
 }

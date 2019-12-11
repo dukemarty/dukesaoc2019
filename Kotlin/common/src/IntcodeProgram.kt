@@ -2,15 +2,16 @@ package dukemarty.aoc2019.common
 
 class IntcodeProgram(prog: String) {
 
-    private var opcodes: IntArray
+    private var opcodes: LongArray
 
     init {
-        opcodes = prog.split(",").map { it.toInt() }.toIntArray()
+        val inputOpcodes = prog.split(",").map { it.toLong() }
+        opcodes = inputOpcodes.toLongArray().copyOf(inputOpcodes.size + 10000)
     }
 
-    fun get(index: Int): Int {
+    fun get(index: Int): Long {
         if (index > opcodes.size) {
-            val newOpcodes = IntArray(2 * index)
+            val newOpcodes = LongArray(2 * index)
             opcodes.copyInto(newOpcodes)
             opcodes = newOpcodes
         }
@@ -18,23 +19,36 @@ class IntcodeProgram(prog: String) {
         return opcodes[index]
     }
 
-    fun read(index: Int, mode: Int): Int {
+    fun read(index: Int, mode: Int, relativeBase: Int): Long {
         return when (mode) {
             MODE_POSITION -> gget(index)
             MODE_IMMEDIATE -> get(index)
+            MODE_RELATIVE -> get(get(index).toInt() + relativeBase)
             else -> 0
         }
     }
 
-    fun gget(index: Int): Int {
-        val pos = get(index)
+    fun readAddress(index: Int, mode: Int, relativeBase: Int): Long {
+        return when (mode) {
+            MODE_POSITION -> get(index)
+            MODE_IMMEDIATE -> {
+                println("ERROR: Requested address in IMMEDIATE mode.")
+                get(index)
+            }
+            MODE_RELATIVE -> get(index) + relativeBase
+            else -> 0
+        }
+    }
+
+    fun gget(index: Int): Long {
+        val pos = get(index).toInt()
 
         return get(pos)
     }
 
-    fun set(index: Int, value: Int) {
+    fun set(index: Int, value: Long) {
         if (index > opcodes.size) {
-            val newOpcodes = IntArray(2 * index)
+            val newOpcodes = LongArray(2 * index)
             opcodes.copyInto(newOpcodes)
             opcodes = newOpcodes
         }

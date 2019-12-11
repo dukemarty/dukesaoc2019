@@ -17,18 +17,18 @@ fun main(args: Array<String>) {
 fun day7partOne(line: String) {
     println("\n--- Part One ---")
 
-    var maxRes = Int.MIN_VALUE
+    var maxRes = Long.MIN_VALUE
     var combination = IntArray(5)
 
     for (perm in permute(listOf(0, 1, 2, 3, 4))) {
         val progs = arrayOf(IntcodeProgram(line), IntcodeProgram(line), IntcodeProgram(line), IntcodeProgram(line), IntcodeProgram(line))
         val amps = arrayOf(IntcodeInterpreter(progs[0]), IntcodeInterpreter(progs[1]), IntcodeInterpreter(progs[2]), IntcodeInterpreter(progs[3]), IntcodeInterpreter(progs[4]))
 
-        amps[0].inputBuffer = arrayListOf(perm[0], 0)
+        amps[0].inputBuffer = arrayListOf(perm[0].toLong(), 0)
         for (i in IntRange(0, 3)) {
             amps[i].addOutputInterpreter(amps[i + 1])
 
-            amps[i + 1].inputBuffer = arrayListOf(perm[i + 1])
+            amps[i + 1].inputBuffer = arrayListOf(perm[i + 1].toLong())
         }
 
         for (i in IntRange(0, 4)) {
@@ -48,18 +48,18 @@ fun day7partOne(line: String) {
 fun day7partTwo(line: String) {
     println("\n--- Part Two ---")
 
-    var maxRes = Int.MIN_VALUE
+    var maxRes = Long.MIN_VALUE
     var combination = IntArray(5)
 
     for (perm in permute(listOf(5, 6, 7, 8, 9))) {
         val progs = arrayOf(IntcodeProgram(line), IntcodeProgram(line), IntcodeProgram(line), IntcodeProgram(line), IntcodeProgram(line))
         val amps = arrayOf(IntcodeInterpreter(progs[0]), IntcodeInterpreter(progs[1]), IntcodeInterpreter(progs[2]), IntcodeInterpreter(progs[3]), IntcodeInterpreter(progs[4]))
 
-        amps[0].inputBuffer = arrayListOf(perm[0], 0)
+        amps[0].inputBuffer = arrayListOf(perm[0].toLong(), 0)
         for (i in IntRange(0, 3)) {
             amps[i].addOutputInterpreter(amps[i + 1])
 
-            amps[i + 1].inputBuffer = arrayListOf(perm[i + 1])
+            amps[i + 1].inputBuffer = arrayListOf(perm[i + 1].toLong())
         }
         amps[4].addOutputInterpreter(amps[0])
 

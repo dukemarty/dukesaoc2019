@@ -41,13 +41,13 @@ fun partTwo(line: String) {
         for (verb in 0..99) {
             val program = IntcodeProgram(line)
 
-            program.set(1, noun)
-            program.set(2, verb)
+            program.set(1, noun.toLong())
+            program.set(2, verb.toLong())
 
             val interpreter = IntcodeInterpreter(program)
             interpreter.runProgram()
 
-            if (program.get(0) == 19690720){
+            if (program.get(0) == 19690720L){
                 println("Found result noun/verb = $noun / $verb => result: ${100 * noun + verb}")
             }
         }
