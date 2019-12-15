@@ -15,7 +15,7 @@ fun main(args: Array<String>) {
 
     day9PartOne(line)
 
-//    day7partTwo(line)
+    day9PartTwo(line)
 }
 
 
@@ -26,6 +26,20 @@ fun day9PartOne(line: String) {
 
     val interpreter = IntcodeInterpreter(program)
     interpreter.inputBuffer = arrayListOf(1)
+
+    interpreter.runProgram()
+
+    println("Output of program: ${interpreter.outputBuffer}")
+    println("Simpler: ${interpreter.outputBuffer.joinToString { it.value.toString() }}")
+}
+
+fun day9PartTwo(line: String) {
+    println("\n--- Part Two ---")
+
+    val program = IntcodeProgram(line)
+
+    val interpreter = IntcodeInterpreter(program)
+    interpreter.inputBuffer = arrayListOf(2)
 
     interpreter.runProgram()
 

@@ -76,8 +76,8 @@ class IntcodeInterpreter(private val program: IntcodeProgram) {
         var execCount = 0
         while (!stopRun) {
 
-            if (DEBUG){
-                println("$execCount) pc=$pc")
+            if (DEBUG) {
+                println("$execCount) pc=$pc: [${program.get(pc)}, ${program.get(pc+1)}, ${program.get(pc+2)}, ${program.get(pc+3)}]")
             }
 
             val instr = LiveInstruction(program.get(pc))
@@ -86,17 +86,13 @@ class IntcodeInterpreter(private val program: IntcodeProgram) {
                 val result = machineLanguage[instr.opcode]!!.executor(instr, program)
 
                 stopRun = result.stopRun
-//            when (instr.opcode) {
-//                OPCODE_ADD -> stopRun = performAdd(instr, program)
-//                OPCODE_MUL -> stopRun = performMul(instr, program)
-//                OPCODE_END -> stopRun = true
-//            }
 
                 if (result.updatePc) {
                     pc += 1 + machineLanguage[instr.opcode]!!.parameterCount
                 }
             } else {
                 println("ERROR: Encountered unknown opcode in step $execCount: ${instr.opcode}  at index $pc.")
+                println("Outputbuffer: ${outputBuffer.joinToString(separator = "\n") { it.toString() }}")
                 exitProcess(1)
             }
 
@@ -105,33 +101,33 @@ class IntcodeInterpreter(private val program: IntcodeProgram) {
     }
 
     private fun performAdd(instruction: LiveInstruction, program: IntcodeProgram): InstructionResult {
-//        program.set(program.get(pc + 3), program.gget(pc + 1) + program.gget(pc + 2))
-        val dest = program.readAddress(pc + 3, instruction.paramModes[2], relativeBase)
-//        val dest = program.read(pc + 3, instruction.paramModes[2])
         val src1 = program.read(pc + 1, instruction.paramModes[0], relativeBase)
         val src2 = program.read(pc + 2, instruction.paramModes[1], relativeBase)
+        val dest = program.readAddress(pc + 3, instruction.paramModes[2], relativeBase)
+
+        val result = src1 + src2
 
         if (DEBUG) {
-            println("ADD: $src1(${instruction.paramModes[0]}) + $src2(${instruction.paramModes[1]}) -> $dest(${instruction.paramModes[2]})")
+            println("ADD: $src1(${instruction.paramModes[0]}) + $src2(${instruction.paramModes[1]}) (= $result) -> $dest(${instruction.paramModes[2]})")
         }
 
-        program.set(dest.toInt(), src1 + src2)
+        program.set(dest.toInt(), result)
 
         return InstructionResult(false, true)
     }
 
     private fun performMul(instruction: LiveInstruction, program: IntcodeProgram): InstructionResult {
-//        program.set(program.get(pc + 3), program.gget(pc + 1) * program.gget(pc + 2))
-        val dest = program.readAddress(pc + 3, instruction.paramModes[2], relativeBase)
-//        val dest = program.read(pc + 3, instruction.paramModes[2])
         val src1 = program.read(pc + 1, instruction.paramModes[0], relativeBase)
         val src2 = program.read(pc + 2, instruction.paramModes[1], relativeBase)
+        val dest = program.readAddress(pc + 3, instruction.paramModes[2], relativeBase)
+
+        val result = src1 * src2
 
         if (DEBUG) {
-            println("MUL: $src1(${instruction.paramModes[0]}) * $src2(${instruction.paramModes[1]}) (= ${src1 * src2})-> $dest(${instruction.paramModes[2]})")
+            println("MUL: $src1(${instruction.paramModes[0]}) * $src2(${instruction.paramModes[1]}) (= $result)-> $dest(${instruction.paramModes[2]})")
         }
 
-        program.set(dest.toInt(), src1 * src2)
+        program.set(dest.toInt(), result)
 
         return InstructionResult(false, true)
     }
@@ -179,7 +175,7 @@ class IntcodeInterpreter(private val program: IntcodeProgram) {
 
         var performedJump = false
         if (compValue == 0L) {
-            pc = program.readAddress(pc + 2, instruction.paramModes[1], relativeBase).toInt()
+            pc = program.read(pc + 2, instruction.paramModes[1], relativeBase).toInt()
             performedJump = true
         }
 
@@ -218,9 +214,8 @@ class IntcodeInterpreter(private val program: IntcodeProgram) {
         val baseChange = program.read(pc + 1, instruction.paramModes[0], relativeBase)
 
         if (DEBUG) {
-            println("REL: $relativeBase += $baseChange(from ${program.get(pc + 1)}[${instruction.paramModes[0]}]) = ${relativeBase + baseChange}")
+            println("REL: $relativeBase + $baseChange(from ${program.get(pc + 1)}[${instruction.paramModes[0]}]) = ${relativeBase + baseChange}")
         }
-
 
         relativeBase += baseChange.toInt()
 

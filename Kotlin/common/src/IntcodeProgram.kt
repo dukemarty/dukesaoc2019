@@ -21,7 +21,7 @@ class IntcodeProgram(prog: String) {
 
     fun read(index: Int, mode: Int, relativeBase: Int): Long {
         return when (mode) {
-            MODE_POSITION -> gget(index)
+            MODE_POSITION -> get(get(index).toInt())
             MODE_IMMEDIATE -> get(index)
             MODE_RELATIVE -> get(get(index).toInt() + relativeBase)
             else -> 0
@@ -34,16 +34,11 @@ class IntcodeProgram(prog: String) {
             MODE_IMMEDIATE -> {
                 println("ERROR: Requested address in IMMEDIATE mode.")
                 get(index)
+//                index.toLong()
             }
             MODE_RELATIVE -> get(index) + relativeBase
             else -> 0
         }
-    }
-
-    fun gget(index: Int): Long {
-        val pos = get(index).toInt()
-
-        return get(pos)
     }
 
     fun set(index: Int, value: Long) {
