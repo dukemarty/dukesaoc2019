@@ -11,9 +11,19 @@ data class Signal(var data: List<Int>) {
         val resList = mutableListOf<Int>()
 
         for (i in IntRange(0, data.size - 1)) {
-            val zipList = data.zip(pattern.getForElem(i).take(data.size).toList())
-            val next = zipList.map { it.first * it.second }.sum()
-            resList.add(kotlin.math.abs(next) % 10)
+            var pos=0
+            val patt = pattern.getForElem(i).iterator()
+            var res = 0
+            while (pos < data.size){
+                val next = patt.next()
+                val toPos = min(data.size, pos+next.first)
+                if (next.second != 0) {
+                    res += data.subList(pos, toPos).sum() * next.second
+                }
+
+                pos = toPos
+            }
+            resList.add(kotlin.math.abs(res) % 10)
         }
 
         data = resList.toList()
@@ -25,18 +35,16 @@ data class FFTPattern(val basePattern: IntArray) {
 
         val multiplicity = index + 1
 
-        var posInPattern = 0
-        var posInSequence = 1
+        if (multiplicity > 1){
+            yield(Pair(multiplicity -1, basePattern[0]))
+        }
+
+        var posInPattern = 1
 
         while (true) {
-            if (posInSequence == multiplicity) {
-                posInPattern = (posInPattern + 1) % basePattern.size
-                posInSequence = 0
-            }
+            yield(Pair(multiplicity, basePattern[posInPattern]))
 
-            yield(basePattern[posInPattern])
-
-            posInSequence++
+            posInPattern = (posInPattern + 1) % basePattern.size
         }
     }
 }
