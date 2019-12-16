@@ -4,7 +4,11 @@ import kotlin.system.exitProcess
 
 data class ProgramOutput(val pc: Int, val value: Long)
 
-class IntcodeInterpreter(private val program: IntcodeProgram) {
+interface InterpreterOutputReceiver {
+    fun appendInput(newInput: Long)
+}
+
+class IntcodeInterpreter(private val program: IntcodeProgram) : InterpreterOutputReceiver {
 
     val DEBUG = true
 
@@ -48,7 +52,7 @@ class IntcodeInterpreter(private val program: IntcodeProgram) {
 
     var inputBuffer = ArrayList<Long>();
     val outputBuffer = ArrayList<ProgramOutput>()
-    var outputForward = ArrayList<IntcodeInterpreter>()
+    var outputForward = ArrayList<InterpreterOutputReceiver>()
 
     var state = STATE_INIT
 
@@ -58,11 +62,11 @@ class IntcodeInterpreter(private val program: IntcodeProgram) {
         pc += stepWidth
     }
 
-    fun addOutputInterpreter(target: IntcodeInterpreter) {
+    fun addOutputInterpreter(target: InterpreterOutputReceiver) {
         outputForward.add(target)
     }
 
-    fun appendInput(newInput: Long) {
+    override fun appendInput(newInput: Long) {
         inputBuffer.add(newInput)
     }
 
@@ -77,7 +81,7 @@ class IntcodeInterpreter(private val program: IntcodeProgram) {
         while (!stopRun) {
 
             if (DEBUG) {
-                println("$execCount) pc=$pc: [${program.get(pc)}, ${program.get(pc+1)}, ${program.get(pc+2)}, ${program.get(pc+3)}]")
+                println("$execCount) pc=$pc: [${program.get(pc)}, ${program.get(pc + 1)}, ${program.get(pc + 2)}, ${program.get(pc + 3)}]")
             }
 
             val instr = LiveInstruction(program.get(pc))
