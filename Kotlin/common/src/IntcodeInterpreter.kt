@@ -10,7 +10,7 @@ interface InterpreterOutputReceiver {
 
 class IntcodeInterpreter(private val program: IntcodeProgram) : InterpreterOutputReceiver {
 
-    val DEBUG = true
+    val DEBUG = false
 
     val MISSING_INPUT_IGNORE = 0
     val MISSING_INPUT_HALT = 1
