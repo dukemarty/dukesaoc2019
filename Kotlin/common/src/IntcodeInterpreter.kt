@@ -70,6 +70,10 @@ class IntcodeInterpreter(private val program: IntcodeProgram) : InterpreterOutpu
         inputBuffer.add(newInput)
     }
 
+    fun clearOutput(){
+        outputBuffer.clear()
+    }
+
     fun runProgram() {
 
 //        var op = program.get(pc)
