@@ -9,7 +9,7 @@ data class Tile(val x: Int, val y: Int, val tileId: Int)
 
 data class Screen(val gameOutput: List<Long>, val tiles: ArrayList<Tile> = ArrayList<Tile>(), var score: Int = 0) {
 
-    val field = Array(40) { CharArray(60) { '.' } }
+    val field = Array(25) { CharArray(45) { '.' } }
 
     init {
         var i = 0;
@@ -24,6 +24,13 @@ data class Screen(val gameOutput: List<Long>, val tiles: ArrayList<Tile> = Array
 
             i += 3
         }
+    }
+
+    fun getMax(): Pair<Int, Int>{
+        val maxX = tiles.map{it.x}.max()
+        val maxY = tiles.map{it.y}.max()
+
+        return Pair(maxX!!.toInt(), maxY!!.toInt())
     }
 
     fun applyTiles(){
@@ -66,7 +73,7 @@ fun main(args: Array<String>) {
 //    line = "104,1125899906842624,99"
 
     day13PartOne(line)
-    day13PartTwo(line)
+//    day13PartTwo(line)
 }
 
 
@@ -83,6 +90,7 @@ fun day13PartOne(line: String) {
     val screen = Screen(outputList)
 
     println("Length of output: ${outputList.size}")
+    println("Playing field size: ${screen.getMax()}")
     println(screen)
     screen.applyTiles()
     screen.printScreen()
@@ -97,7 +105,7 @@ fun day13PartTwo(line: String) {
 
     val interpreter = IntcodeInterpreter(program)
 
-    while (!interpreter.state == interpreter.STATE_STOPPED){
+    while (interpreter.state != interpreter.STATE_STOPPED){
         interpreter.runProgram()
         val outputList = interpreter.outputBuffer.map { it.value }
         val screen = Screen(outputList)
@@ -109,10 +117,10 @@ fun day13PartTwo(line: String) {
     }
 
 
-    println("Length of output: ${outputList.size}")
-    println(screen)
-    screen.applyTiles()
-    screen.printScreen()
-    println("Final result (#block tiles): ${screen.countBlocks('=')}")
+//    println("Length of output: ${outputList.size}")
+//    println(screen)
+//    screen.applyTiles()
+//    screen.printScreen()
+//    println("Final result (#block tiles): ${screen.countBlocks('=')}")
 }
 
