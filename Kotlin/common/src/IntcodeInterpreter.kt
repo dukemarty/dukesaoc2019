@@ -66,6 +66,10 @@ class IntcodeInterpreter(private val program: IntcodeProgram) : InterpreterOutpu
         outputForward.add(target)
     }
 
+    fun appendInput(newInput: Int){
+        appendInput(newInput.toLong())
+    }
+
     override fun appendInput(newInput: Long) {
         inputBuffer.add(newInput)
     }
