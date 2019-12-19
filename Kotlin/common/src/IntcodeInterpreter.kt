@@ -58,9 +58,18 @@ class IntcodeInterpreter(private val program: IntcodeProgram) : InterpreterOutpu
 
     var missingInputHandling = MISSING_INPUT_IGNORE
 
-    fun step(stepWidth: Int) {
-        pc += stepWidth
+    fun reset(){
+        program.reset()
+        inputBuffer.clear()
+        outputBuffer.clear()
+        pc = 0
+        ip = 0
+        relativeBase = 0
     }
+
+//    fun step(stepWidth: Int) {
+//        pc += stepWidth
+//    }
 
     fun addOutputInterpreter(target: InterpreterOutputReceiver) {
         outputForward.add(target)

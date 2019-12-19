@@ -2,10 +2,16 @@ package dukemarty.aoc2019.common
 
 class IntcodeProgram(prog: String) {
 
+    private val rawProgram: String = prog
     private var opcodes: LongArray
 
     init {
         val inputOpcodes = prog.split(",").map { it.toLong() }
+        opcodes = inputOpcodes.toLongArray().copyOf(inputOpcodes.size + 10000)
+    }
+
+    fun reset(){
+        val inputOpcodes = rawProgram.split(",").map { it.toLong() }
         opcodes = inputOpcodes.toLongArray().copyOf(inputOpcodes.size + 10000)
     }
 
