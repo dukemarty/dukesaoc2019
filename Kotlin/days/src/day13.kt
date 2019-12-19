@@ -16,9 +16,9 @@ data class Screen(val gameOutput: List<Long>, val tiles: ArrayList<Tile> = Array
         while (i < gameOutput.size) {
             val nextTile = Tile(gameOutput[i].toInt(), gameOutput[i + 1].toInt(), gameOutput[i + 2].toInt())
 
-            if (nextTile.x == -1 && nextTile.y == 0){
+            if (nextTile.x == -1 && nextTile.y == 0) {
                 score = nextTile.tileId
-            }else {
+            } else {
                 tiles.add(nextTile)
             }
 
@@ -26,16 +26,16 @@ data class Screen(val gameOutput: List<Long>, val tiles: ArrayList<Tile> = Array
         }
     }
 
-    fun getMax(): Pair<Int, Int>{
-        val maxX = tiles.map{it.x}.max()
-        val maxY = tiles.map{it.y}.max()
+    fun getMax(): Pair<Int, Int> {
+        val maxX = tiles.map { it.x }.max()
+        val maxY = tiles.map { it.y }.max()
 
         return Pair(maxX!!.toInt(), maxY!!.toInt())
     }
 
-    fun applyTiles(){
-        for (t in tiles){
-            val block = when (t.tileId){
+    fun applyTiles() {
+        for (t in tiles) {
+            val block = when (t.tileId) {
                 0 -> '.'
                 1 -> '#'
                 2 -> '='
@@ -50,14 +50,14 @@ data class Screen(val gameOutput: List<Long>, val tiles: ArrayList<Tile> = Array
 
     fun countBlocks(blockType: Char): Int {
         var res = 0
-        for (row in field){
+        for (row in field) {
             res += row.count { it == blockType }
         }
 
         return res
     }
 
-    fun printScreen(){
+    fun printScreen() {
         println(field.joinToString(separator = "\n") { it.joinToString(separator = "") { it.toString() } })
     }
 }
@@ -73,7 +73,7 @@ fun main(args: Array<String>) {
 //    line = "104,1125899906842624,99"
 
     day13PartOne(line)
-//    day13PartTwo(line)
+    day13PartTwo(line)
 }
 
 
@@ -97,6 +97,82 @@ fun day13PartOne(line: String) {
     println("Final result (#block tiles): ${screen.countBlocks('=')}")
 }
 
+data class AutoPlayer(val interpreter: IntcodeInterpreter) : InterpreterOutputReceiver {
+
+    val input = ArrayList<Long>()
+    var ballOld = Coordinates(0, 0)
+    var ball = Coordinates(0, 0)
+    var paddle = Coordinates(0, 0)
+
+    init {
+        interpreter.addOutputInterpreter(this)
+//        interpreter.appendInput(0L)
+    }
+
+    override fun appendInput(newInput: Long) {
+        input.add(newInput)
+
+        if (input.size == 3) {
+            when (input[2]) {
+                4L -> {
+                    println("Received ball")
+                    println("Paddle: $paddle")
+                    ballOld.x = ball.x
+                    ballOld.y = ball.y
+                    ball.x = input[0].toInt()
+                    ball.y = input[1].toInt()
+                    println("Old ball: $ballOld")
+                    println("Ball: $ball")
+
+                    val diffX = paddle.x - ball.x
+                    val diffY = ball.y - paddle.y
+                    if (ballOld.x < ball.x) { // ball moves right
+                        println("BALL moves right")
+                        if (diffX <= 0) {
+                            println("MOVE RIGHT")
+                            interpreter.appendInput(1L)
+                        } else {
+                            if (diffX > diffY) {
+                                println("MOVE LEFT")
+                                interpreter.appendInput(-1L)
+                            } else if (diffX < diffY) {
+                                println("MOVE RIGHT")
+                                interpreter.appendInput(1L)
+                            } else {
+                                println("STAY")
+                                interpreter.appendInput(0L)
+                            }
+                        }
+                    } else { // ball moves left
+                        println("BALL moves left")
+                        if (diffX >= 0) {
+                            println("MOVE LEFT")
+                            interpreter.appendInput(-1L)
+                        } else {
+                            if (diffX < diffY) {
+                                println("MOVE RIGHT")
+                                interpreter.appendInput(1L)
+                            } else if (diffX > diffY) {
+                                println("MOVE LEFT")
+                                interpreter.appendInput(-1L)
+                            } else {
+                                println("STAY")
+                                interpreter.appendInput(0L)
+                            }
+                        }
+                    }
+                }
+                3L -> {
+                    paddle.x = input[0].toInt()
+                    paddle.y = input[1].toInt()
+                }
+            }
+
+            input.clear()
+        }
+    }
+}
+
 fun day13PartTwo(line: String) {
     println("\n--- Part Two ---")
 
@@ -104,23 +180,29 @@ fun day13PartTwo(line: String) {
     program.set(0, 2)
 
     val interpreter = IntcodeInterpreter(program)
+    val player = AutoPlayer(interpreter)
 
-    while (interpreter.state != interpreter.STATE_STOPPED){
+    var round = 0
+    while (interpreter.state != interpreter.STATE_STOPPED) {
+        println("Round $round")
         interpreter.runProgram()
-        val outputList = interpreter.outputBuffer.map { it.value }
-        val screen = Screen(outputList)
-        println(screen)
 
-        println("TODO XXXX")
+        val screen = Screen(interpreter.outputBuffer.map { it.value })
+        screen.applyTiles()
+        screen.printScreen()
 
-        interpreter.clearOutput()
+        ++round
     }
 
+    println("Interpreter state: ${interpreter.state}")
 
-//    println("Length of output: ${outputList.size}")
-//    println(screen)
-//    screen.applyTiles()
-//    screen.printScreen()
-//    println("Final result (#block tiles): ${screen.countBlocks('=')}")
+    val outputList = interpreter.outputBuffer.map { it.value }
+    val screen = Screen(outputList)
+    println("Length of output: ${outputList.size}")
+    println(screen)
+    screen.applyTiles()
+    screen.printScreen()
+    println("Final result (#block tiles): ${screen.countBlocks('=')}")
+    println("Final result (score): ${screen.score}")
 }
 
